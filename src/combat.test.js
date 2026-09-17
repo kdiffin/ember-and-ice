@@ -1,0 +1,13 @@
+import {test} from 'node:test';import assert from 'node:assert/strict';import {Duel} from './combat.js';
+function game(){const g=new Duel();g.start();for(let i=0;i<36;i++)g.step(.04);return g}
+test('countdown gates attacks and starts combat',()=>{const g=new Duel();assert.equal(g.attack(0,'punch'),false);g.start();assert.equal(g.attack(0,'punch'),false);for(let i=0;i<36;i++)g.step(.04);assert.equal(g.state,'fight')});
+test('punch hits once and only in range',()=>{const g=game();g.fighters[0].x=0;g.fighters[1].x=1.4;g.attack(0,'punch');for(let i=0;i<9;i++)g.step(.04);assert.equal(g.fighters[1].hp,93);const far=game();far.attack(0,'kick');for(let i=0;i<15;i++)far.step(.04);assert.equal(far.fighters[1].hp,100)});
+test('blocking reduces damage and prevents freeze',()=>{const g=game();g.fighters[0].block=true;g.hit(0,15,1,true);assert.equal(g.fighters[0].hp,97);assert.equal(g.fighters[0].frozen,0)});
+test('special consumes energy and hits at distance',()=>{const g=game();assert.equal(g.attack(0,'special'),true);assert.equal(g.fighters[0].energy,0);for(let i=0;i<35;i++)g.step(.04);assert.equal(g.fighters[1].hp,85);assert.equal(g.attack(0,'special'),false)});
+test('jump avoids a projectile at standing height',()=>{const g=game();g.fighters[0].y=2;g.fighters[0].vy=1;g.projectiles=[{x:g.fighters[0].x+.1,y:1.5,dir:-1,owner:1}];g.step(.01);assert.equal(g.fighters[0].hp,100)});
+test('two round victories end the match',()=>{const g=game();g.wins[0]=1;g.fighters[1].hp=0;g.step(.01);assert.equal(g.state,'roundOver');for(let i=0;i<65;i++)g.step(.04);assert.equal(g.state,'finished');assert.equal(g.wins[0],2)});
+test('timeout draw gives neither fighter a win',()=>{const g=game();g.time=.001;g.step(.01);assert.equal(g.winner,-1);assert.deepEqual(g.wins,[0,0])});
+
+test('both players move independently and neither moves without input',()=>{const g=game();const initial=g.fighters.map(f=>f.x);g.step(.04);assert.deepEqual(g.fighters.map(f=>f.x),initial);g.step(.04,{move:1},{move:-1});assert.ok(g.fighters[0].x>initial[0]);assert.ok(g.fighters[1].x<initial[1]);const first=g.fighters[0].x;g.step(.04,{}, {jump:true});assert.equal(g.fighters[0].x,first);assert.ok(g.fighters[1].y>0)});
+test('player two can cast ice and freeze player one',()=>{const g=game();g.step(.04,{}, {attack:'special'});assert.equal(g.fighters[1].energy,0);for(let i=0;i<30;i++)g.step(.04);assert.equal(g.fighters[0].hp,85);assert.ok(g.fighters[0].frozen>0);assert.equal(g.fighters[0].energy,100)});
+test('player two can block a player one projectile',()=>{const g=game();g.step(.04,{attack:'special'},{block:true});for(let i=0;i<30;i++)g.step(.04,{}, {block:true});assert.equal(g.fighters[1].hp,97)});
