@@ -1,6 +1,6 @@
 # Frost & Ember
 
-A side-view, local two-player arcade fighter made with Three.js. Original procedural geometry depicts Scorpion and Sub-Zero in a moonlit temple. No external art assets are required. Google Fonts are optional; system fonts provide a fallback.
+A side-view arcade fighter made with Three.js. Choose local two-player mode or fight Sub-Zero in CPU mode. Original procedural geometry depicts Scorpion and Sub-Zero in a moonlit temple. No external art assets are required. Google Fonts are optional; system fonts provide a fallback.
 
 ## Run
 
@@ -16,6 +16,8 @@ Open the local URL printed by Vite. A browser with WebGL 2 is required.
 Player 1 (Scorpion): A/D move, W jump, S block, J punch, K kick, L hellfire.
 
 Player 2 (Sub-Zero): left/right arrows move, up arrow jumps, down arrow blocks, 1 punches, 2 kicks, 3 launches ice. Use the number row or numpad with Num Lock on.
+
+Choose `1 PLAYER VS CPU` on the title screen to let the game control Sub-Zero, or switch to `TWO PLAYERS` to use the controls above.
 
 Escape: pause. M: sound. Both players share one keyboard. Separate touch controls are available on narrow screens.
 
